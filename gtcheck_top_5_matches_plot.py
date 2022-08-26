@@ -60,15 +60,22 @@ for i in range(1,6):
 plt.legend(loc = "center right", bbox_to_anchor = (0,1,1,-0.7))
 plt.savefig("gtcheck_top_5_matches.discordance_sites.png")
 
+######################################################################################
+
 df_plot_n2 = [x[2] for x in df_plot.values()]
 df_plot_n2_log = np.log10(df_plot_n2)
 df_plot_n2_log_b0 = []
+df_plot_n2_log_a0 = []
 for x in df_plot_n2_log:
-  if x < 0:
-    df_plot_n2_log_b0.append(True)
-  else:
-    df_plot_n2_log_b0.append(False)
+    # discordance score cutoff
+    if x < 0:
+        df_plot_n2_log_b0.append(True)
+        df_plot_n2_log_a0.append(False)
+    else:
+        df_plot_n2_log_b0.append(False)
+        df_plot_n2_log_a0.append(True)
 df_plot_n2_log_b0f = df_plot_n2_log[df_plot_n2_log_b0]
+df_plot_n2_log_a0f = df_plot_n2_log[df_plot_n2_log_a0]
 
 df_plot_s = [x[0] for x in df_plot.values()]
 df_plot_s = np.array(df_plot_s)
@@ -77,6 +84,7 @@ df_plot_s_log_b0f = df_plot_s[df_plot_n2_log_b0]
 df_plot_key = [x for x in df_plot.keys()]
 df_plot_key = np.array(df_plot_key)
 df_plot_key_log_b0f = df_plot_key[df_plot_n2_log_b0]
+df_plot_key_log_a0f = df_plot_key[df_plot_n2_log_a0]
 
 df_plot_input = []
 for i in range(1,6):
@@ -109,5 +117,34 @@ ax2.set(ylabel = "log10(Discordance)", xticklabels = plotlab)
 ax2.set_ylim([-0.5,0.5])
 plt.savefig("gtcheck_top_5_matches.discordance_boxplot_filtered.png")
 
+df_log_a0f = df.query("Query in @df_plot_key_log_a0f")
+df_log_a0f.to_csv("gtcheck_top_5_matches.filtered.txt", index = None, sep = '\t')
+
 df_log_b0f = df.query("Query in @df_plot_key_log_b0f")
-df_log_b0f.to_csv(r'gtcheck_top_5_matches.filtered.txt', index = None, sep = '\t', mode = 'a')
+df_log_b0f.to_csv("gtcheck_top_5_matches.duplicates.txt", index = None, sep = '\t')
+
+######################################################################################
+
+df_plot_n3 = [x[3] for x in df_plot.values()]
+df_plot_n3_log = np.log10(df_plot_n3)
+df_plot_n3_log_b0 = []
+df_plot_n3_log_a0 = []
+for x in df_plot_n3_log:
+    # discordance score cutoff
+    if x < 0:
+        df_plot_n3_log_b0.append(True)
+        df_plot_n3_log_a0.append(False)
+    else:
+        df_plot_n3_log_b0.append(False)
+        df_plot_n3_log_a0.append(True)
+df_plot_n3_log_b0f = df_plot_n3_log[df_plot_n3_log_b0]
+df_plot_n3_log_a0f = df_plot_n3_log[df_plot_n3_log_a0]
+
+df_plot_key = [x for x in df_plot.keys()]
+df_plot_key = np.array(df_plot_key)
+df_plot_key_log_b0f = df_plot_key[df_plot_n3_log_b0]
+df_plot_key_log_a0f = df_plot_key[df_plot_n3_log_a0]
+
+df_log_b0f = df.query("Query in @df_plot_key_log_b0f")
+df_log_b0f.to_csv("gtcheck_top_5_matches.triplicates.txt", index = None, sep = '\t')
+
