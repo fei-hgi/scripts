@@ -4,6 +4,7 @@ import argparse
 import os
 import shutil
 import stat
+import matplotlib.pyplot as plt
 
 tmp_dir = "file:///lustre/scratch123/teams/hgi/fs18/ddd_qc/results_afterqc/tmp/"
 sc = pyspark.SparkContext()
@@ -16,6 +17,14 @@ mt_ddd = hl.read_matrix_table("file:///lustre/scratch123/teams/hgi/fs18/ddd_qc/v
 samples_to_keep = mt_ddd.s.collect()
 set_to_keep = hl.literal(samples_to_keep)
 mt_pavlos_filter = mt_pavlos.filter_cols(set_to_keep.contains(mt_pavlos.s), keep=True)
+
+samples_to_keep = mt_pavlos.s.collect()
+set_to_keep = hl.literal(samples_to_keep)
+mt_ddd_filter = mt_ddd.filter_cols(set_to_keep.contains(mt_ddd.s), keep=True)
+
+#mt_pavlos_filter = mt_pavlos_filter.annotate_rows(
+#    info=mt_pavlos_filter.info.annotate(
+#        rf_bin=mt_ddd_filter.rows()[mt_pavlos_filter.row_key].info.rf_bin))
 
 mt_tmp = mt_pavlos_filter
 sample_list = mt_tmp.cols().s.collect()
@@ -34,4 +43,4 @@ non_ref = sampleqc_ht.sample_qc.n_non_ref.collect()
 sampleqc_samples = sampleqc_ht.s.collect()
 sample_counts = {sampleqc_samples[i]: non_ref[i] for i in range(len(sampleqc_samples))}
 
-
+plt.boxplot(non_ref)
