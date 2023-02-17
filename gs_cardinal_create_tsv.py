@@ -147,7 +147,6 @@ import warnings
 warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
 
 # process module
-#import pyodbc
 import mysql.connector
 import pandas as pd
 import re
@@ -162,7 +161,7 @@ def main(argvs):
     try:
         opts, args = getopt.getopt(argvs,"vhe:o:p:",["version","help","efile=","outdir=", "outpre="])
         if len(opts) == 0:
-            print("Please use the correct arguments, for usage type -h")
+            usageInfo()
             sys.exit(2)
     except(getopt.GetoptError):
         sys.exit(2)
@@ -300,9 +299,9 @@ def main(argvs):
         fetchrows = cursor.fetchall()
 
         if cursor.rowcount == 0:
-            printstr = "   !!!WARNING!!! No meta information fetched for: " + row['Library ID']
+            printstr = "    !!!WARNING!!! No meta information fetched for: " + row['Library ID']
             runTime(printstr)
-            printstr = "   !!!WARNING!!! " + row['Library ID'] + " may failed"
+            printstr = "    !!!WARNING!!! " + row['Library ID'] + " may failed"
             runTime(printstr)
         else:
             df_ss = pd.DataFrame(fetchrows, columns = colnames)
@@ -342,6 +341,11 @@ def main(argvs):
                     pool_id = row['LCA_POOLs'].split("_")[0]
                     cond2 = df_donor['LCA PBMC Pools'].eq(pool_id)
                     list_in = list(df_donor.loc[cond1 & cond2, 'State'])
+
+                    # check no match using sample id and pool id, could be something wrong with meta sheet
+                    if not list_in:
+                        printstr = "    |----> " + srow['library_id'] + ": " + srow['donor_supplier'] + " no match found with sample id and pool id, check meta sheet"
+                        runTime(printstr)
 
                 check_24h = "No"
                 check_48h = "No"
