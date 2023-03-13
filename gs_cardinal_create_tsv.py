@@ -11,7 +11,7 @@
 ################
 
 '''
-USAGE:\tgs_excel.py -e <excel file> -o <output directory> -p <output prefix>
+USAGE:\tgs_cardinal_create_tsv.py -e <excel file> -o <output directory> -p <output prefix>
 
 Arguments:
 \t-e, --efile           the path of excel file
