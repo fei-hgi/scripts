@@ -6,12 +6,24 @@
 #                                                              #
 ################################################################
 
+#######################
+#### system module ####
+#######################
+
+import os
+import sys, getopt
+from datetime import datetime
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
+
+script_name = os.path.basename(__file__)
+
 ################
 #### ReadMe ####
 ################
 
-'''
-USAGE:\tgs_cardinal_create_tsv.py -e <excel file> -o <output directory> -p <output prefix>
+readME = f'''
+USAGE:\t{script_name} -e <excel file> -o <output directory> -p <output prefix>
 
 Arguments:
 \t-e, --efile           the path of excel file
@@ -33,30 +45,20 @@ Developer:
 \tUnited Kingdom
 ''' 
 
-##########################
-#### Global Variables ####
-##########################
-
-HOST = "mlwh-db-ro"
-PORT = "3435"
-USER = "mlwh_humgen"
-PASSWORD = "mlwh_humgen_is_secure"
-DATABASE = "mlwarehouse"
-
 #####################
 #### subfunction ####
 #####################
 
 def versions():
-    verStr = "Program:\tgs_cardinal_create_tsv.py\nVersion:\t1.0"
+    verStr = f"Program:\t{script_name}\nVersion:\t1.0"
     print(verStr)
 
 def usageInfo():
     versions()
-    print(__doc__)
+    print(readME)
 
 def welcomeWords():
-    welWords = "Welcome to use gs_cardinal_create_tsv.py"
+    welWords = f"Welcome to use {script_name}"
     print("*"*(len(welWords)+20))
     print("*"," "*(7),welWords," "*(7),"*")
     print("*"*(len(welWords)+20))
@@ -135,21 +137,27 @@ def createLib(df_library:str, df_donor_state:str, df_lib_sid:str):
     df_library_state = df_library_state[df_library_state['Sample Source ID'].notna()]    
     return df_library_state
 
-#######################
-#### main function ####
-#######################
+########################
+#### process module ####
+########################
 
-# system module
-import os
-import sys, getopt
-from datetime import datetime
-import warnings
-warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
-
-# process module
 import mysql.connector
 import pandas as pd
 import re
+
+##########################
+#### Global Variables ####
+##########################
+
+HOST = "mlwh-db-ro"
+PORT = "3435"
+USER = "mlwh_humgen"
+PASSWORD = "mlwh_humgen_is_secure"
+DATABASE = "mlwarehouse"
+
+#######################
+#### main function ####
+#######################
 
 def main(argvs):
     #------------#
@@ -193,7 +201,7 @@ def main(argvs):
     welcomeWords()
 
     ####
-    runTime("1. Reading Excel file, please waiting ...")
+    runTime("1. Reading Excel file, please wait ...")
     
     xl = pd.ExcelFile(excelFile)
     printstr = "   Found sheets: " + ', '.join(str(s) for s in xl.sheet_names)
@@ -210,7 +218,7 @@ def main(argvs):
     df_pcrxp.dropna(subset = ['LCA Connect PCRXP'], inplace = True)
 
     ####
-    runTime("2. Creating donor tsv for genestack table, please waiting ...")
+    runTime("2. Creating donor tsv for genestack table, please wait ...")
 
     df_donor = pd.DataFrame(
         columns = ['Sample Source',            'Sample Source ID', 'Human Barcode', 
@@ -242,7 +250,7 @@ def main(argvs):
     df_donor = df_donor.fillna(' ')
 
     ####
-    runTime("3. Reading library and pool information from sheets, please waiting ...")
+    runTime("3. Reading library and pool information from sheets, please wait ...")
     
     df_library = pd.DataFrame(
         columns = ['Library ID',                     'Sample Source ID',                  'Human Barcode', 
@@ -284,7 +292,7 @@ def main(argvs):
     df_library = df_library.fillna(' ')
 
     #####
-    runTime("4. Extracting meta information from mlwarehouse, please waiting ...")
+    runTime("4. Extracting meta information from mlwarehouse, please wait ...")
     
     mydb = mysql.connector.connect(host = HOST,
                                    port = PORT,
@@ -377,7 +385,7 @@ def main(argvs):
     mydb.close()
 
     ####
-    runTime("5. Removing duplicated Sample Source IDs and refining table, please waiting ...")
+    runTime("5. Removing duplicated Sample Source IDs and refining table, please wait ...")
 
     #df_library_new = df_library.dropna(subset=['Sample Source ID'])
     df_library.loc[df_library['Sample Source ID']==' ', ['Sample Source ID', 'Note']] = ['Not Found', 'This library failed, and would re-do in the upcoming weeks']
@@ -400,7 +408,7 @@ def main(argvs):
     df_donor_new = pd.concat([df_donor_rmdup, df_donor_dup2uni]).reset_index(drop=True)
 
     ####
-    runTime("6. Check donors without libraries in meta sheet and add them in, please waiting ...")
+    runTime("6. Check donors without libraries in meta sheet and add them in, please wait ...")
     for index, row in df_donor_new.iterrows():
         if row['SequenceScape Donor Name'] == ' ':
             df_donor_new.at[index, 'SequenceScape Donor Name'] = 'Refer to Note'
@@ -413,7 +421,7 @@ def main(argvs):
     #--------------#
 
     ####
-    runTime("7. Creating output files, please waiting ...")
+    runTime("7. Creating output files, please wait ...")
 
     donorDir = outputDir + "/donors"
     libraryDir = outputDir + "/libraries"

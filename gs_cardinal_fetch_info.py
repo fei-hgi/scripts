@@ -6,12 +6,24 @@
 #                                                          #
 ############################################################
 
+#######################
+#### system module ####
+#######################
+
+import os
+import sys, getopt
+from datetime import datetime
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
+
+script_name = os.path.basename(__file__)
+
 ################
 #### ReadMe ####
 ################
 
-'''
-USAGE:\tgs_cardinal_fetch_info.py -i <sample id> -l <library id> -s <sample group id> -b <library group id>
+readME = f'''
+USAGE:\t{script_name} -i <sample id> -l <library id> -s <sample group id> -b <library group id>
 
 Arguments:
 \t-i, --id              sample source id
@@ -37,28 +49,20 @@ Developer:
 \tUnited Kingdom
 ''' 
 
-##########################
-#### Global Variables ####
-##########################
-
-TOKEN = "62cd64ed36cc500cde79c7690b9f74c6fd3e8a84"
-GS = "genestack.sanger.ac.uk"
-GSSTUDY = "GSF2353053"
-
 #####################
 #### subfunction ####
 #####################
 
 def versions():
-    verStr = "Program:\tgs_cardinal_fetch_info.py\nVersion:\t1.1"
+    verStr = f"Program:\t{script_name}\nVersion:\t1.1"
     print(verStr)
 
 def usageInfo():
     versions()
-    print(__doc__)
+    print(readME)
 
 def welcomeWords():
-    welWords = "Welcome to use gs_cardinal_fetch_info.py"
+    welWords = f"Welcome to use {script_name}"
     print("*"*(len(welWords)+20))
     print("*"," "*(7),welWords," "*(7),"*")
     print("*"*(len(welWords)+20))
@@ -69,21 +73,25 @@ def runTime(strTmp):
     print(runningTime,">>>>",strTmp)
 
 
-#######################
-#### main function ####
-#######################
+########################
+#### process module ####
+########################
 
-# system module
-import os
-import sys, getopt
-from datetime import datetime
-import warnings
-warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
-
-# process module
 import pandas as pd
 import json
 import integration_curator
+
+##########################
+#### Global Variables ####
+##########################
+
+TOKEN = "62cd64ed36cc500cde79c7690b9f74c6fd3e8a84"
+GS = "genestack.sanger.ac.uk"
+GSSTUDY = "GSF2353053"
+
+#######################
+#### main function ####
+#######################
 
 def main(argvs):
     #------------#
@@ -134,7 +142,7 @@ def main(argvs):
     os.environ["PRED_SPOT_SCHEME"] = "https"
     os.environ["PRED_SPOT_VERSION"] = "default-released"
 
-    runTime("1. Fetching sample meta by sample id, please waiting ...")
+    runTime("1. Fetching sample meta by sample id, please wait ...")
     apiInstance = integration_curator.OmicsQueriesApi()
 
     studyFilterStr = '"genestack:accession"=' + '"' + GSSTUDY + '"'
@@ -188,7 +196,7 @@ def main(argvs):
     except integration_curator.rest.ApiException as e:
         print("Exception when calling OmicsQueriesApi->search_samples: %s\n" % e)
 
-    runTime("2. Fetching library meta by library id, please waiting ...")
+    runTime("2. Fetching library meta by library id, please wait ...")
     apiInstance = integration_curator.LibraryIntegrationApi()
     
     # fetch all the library groups in the cardinal project GSF2353053
@@ -254,7 +262,7 @@ def main(argvs):
     except integration_curator.rest.ApiException as e:
         print("Exception when calling LibraryIntegrationApi->get_libraries_by_samples: %s\n" % e)
 
-    runTime("3. Combining results, please waiting ...")
+    runTime("3. Combining results, please wait ...")
     library_sampleIDs = df_libraryFilter['Sample Source ID'].values.item()
     if sampleID in library_sampleIDs:
         lib_index = library_sampleIDs.index(sampleID)

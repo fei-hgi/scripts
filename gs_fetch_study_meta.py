@@ -23,12 +23,12 @@ script_name = os.path.basename(__file__)
 ################
 
 readME = f'''
-USAGE:\t {script_name} -s <study genestack accession>
+USAGE:\t{script_name} -s <study accession or all>
 
 Arguments:
 
 Optional:
-\t-s, --gsacc           study accession in genestack
+\t-s, --gsacc           study accession in genestack or (all) the studies
 
 Flags:
 \t-h, --help            help information
@@ -74,7 +74,7 @@ def runTime(strTmp):
 
 import pandas as pd
 import json
-import study_user
+import study_curator
 
 ##########################
 #### Global Variables ####
@@ -127,8 +127,8 @@ def main(argvs):
 
     pd.options.display.max_colwidth = 100
 
-    runTime("1. Fetching all the studies, please waiting ...")
-    apiInstance = study_user.StudySPoTApi()
+    runTime("1. Fetching all the studies, please wait ...")
+    apiInstance = study_curator.StudySPoTApi()
 
     fieldStr = "original_data_included"
 
@@ -137,13 +137,13 @@ def main(argvs):
         apiResponse = apiInstance.search_studies(returned_metadata_fields = fieldStr)
         df_study = pd.json_normalize(apiResponse.data)
         
-        if gsStudyAcc == "":
+        if gsStudyAcc == "all":
             print(df_study[['genestack:accession','Study Title']])
         else:
             df_acc = df_study[df_study['genestack:accession']==gsStudyAcc]
             print(df_acc[['genestack:accession','Study Title']])
 
-    except study_user.rest.ApiException as e:
+    except study_curator.rest.ApiException as e:
         print("Exception when calling StudySPoTApi->search_studies: %s\n" % e)
 
 #####################
