@@ -1,10 +1,10 @@
-Sample Source ID	Sample Name Replicate	Condition	Exp
-hgsm3_d4_r1 hgsm3_d4_r1 R1	D4	10.2
-hgsm3_d7_r1	hgsm3_d7_r1 R1	D7	18.3
-hgsm3_d15_r1	hgsm3_d15_r1    R1	D15	32.1
-hgsm3_d4_r2 hgsm3_d4_r2 R2	D4	13.3
-hgsm3_d7_r2 hgsm3_d7_r2 R2	D7	33.4
-hgsm3_d15_r2    hgsm3_d15_r2	R2	D15	41.3
-hgsm3_d4_r3 hgsm3_d4_r3	R3	D4	22.3
-hgsm3_d7_r3 hgsm3_d7_r3	R3	D7	22.8
-hgsm3_d15_r3    hgsm3_d15_r3	R3	D15	11.1
+Sample Source ID	Replicate	Condition	Exp
+hgsm3_d4_r1	R1	D4	10.2
+hgsm3_d7_r1	R1	D7	18.3
+hgsm3_d15_r1	R1	D15	32.1
+hgsm3_d4_r2	R2	D4	13.3
+hgsm3_d7_r2	R2	D7	33.4
+hgsm3_d15_r2	R2	D15	41.3
+hgsm3_d4_r3	R3	D4	22.3
+hgsm3_d7_r3	R3	D7	22.8
+hgsm3_d15_r3	R3	D15	11.1
